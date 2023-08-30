@@ -1,16 +1,26 @@
-export const useConfirm = (message = "", onConfirm, onCancel) => {
-  if (!onConfirm || typeof onConfirm !== "function") {
-    return;
+import React, { useState, useEffect, useRef } from 'react';
+import { ReactDOM } from 'react';
+
+const usePreventLeave = () => {
+  const listener = (event) => {
+    event.preventDefault();
+    event.returnValue = "";
   }
-  if (onCancel && typeof onCancel !== "function") {
-    return;
-  }
-  const confirmAction = () => {
-    if (confirm(message)) {
-      onConfirm();
-    } else {
-      onCancel();
-    }
-  }
-  return confirmAction;
+  const enablePrevent = () => window.addEventListener("beforeunload", listener);
+  const disablePrevent = () => window.addEventListener("beforeunload", listener);
+
+  return { enablePrevent, disablePrevent }
 }
+
+const App = () => {
+  const { enablePrevent, disablePrevent } = usePreventLeave();
+
+  return (
+    <div className='App'>
+      <button onClick={enablePrevent}>Protect</button>
+      <button onClick={disablePrevent}>Unprotect</button>
+    </div>
+  )
+}
+
+export default App;
